@@ -3,8 +3,8 @@
 - **Estado:** Diseño aprobado, no implementado (TARGET-STATE)
 - **Versión de arquitectura:** `v1alpha2`
 - **Fecha:** 2026-07-19
-- **Contratos:** [`edition.declaration.schema.json`](../schemas/v1alpha2/edition.declaration.schema.json), [`deployment-modality.schema.json`](../schemas/v1alpha2/deployment-modality.schema.json)
-- **Relacionadas:** [ADR-0009](../adr/0009-editions-entitlements-and-subscription-degradation.md), [ADR-0010](../adr/0010-edition-vs-deployment-modality.md), [Spec G](g-entitlements-subscriptions-degradation.md)
+- **Contratos:** [`edition.declaration.schema.json`](../schemas/v1alpha2/edition.declaration.schema.json), [`deployment-modality.schema.json`](../schemas/v1alpha2/deployment-modality.schema.json), [`personal-stack.schema.json`](../schemas/v1alpha2/personal-stack.schema.json)
+- **Relacionadas:** [ADR-0009](../adr/0009-editions-entitlements-and-subscription-degradation.md), [ADR-0010](../adr/0010-edition-vs-deployment-modality.md), [ADR-0012](../adr/0012-personal-local-stack-v1.md), [Spec G](g-entitlements-subscriptions-degradation.md), [Spec N](n-personal-local-stack.md)
 
 ## 1. Problema y contexto
 
@@ -24,6 +24,11 @@ configura instancias pero no existe el concepto de edición ni una base libre au
 - Multiusuario, roles y colaboración (ver [Spec C](c-team-organization.md)).
 - Packs premium/privados (ver [Spec E](e-registry-catalog-distribution.md)).
 - Cualquier verificación online obligatoria.
+- **Evaluación de arquitectura, selección de proveedor cloud/BYOC/managed, elección de modalidad de
+  despliegue, proveedor LLM fuera de Anthropic/OpenAI, facturación y operación de flota gestionada.** Son
+  capacidades de **suscripción a Hub**, nunca de Personal. Personal v1 corre el stack local único
+  `personal-local-v1` sin preguntar arquitectura (ver [Spec N](n-personal-local-stack.md) y
+  [ADR-0012](../adr/0012-personal-local-stack-v1.md)).
 
 ## 4. Actores
 

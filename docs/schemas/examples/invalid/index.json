@@ -15,6 +15,15 @@
     { "example": "organization-policy.no-owner.json", "schema": "organization-policy.schema.json", "version": "v1alpha2", "reason": "memberships must contain exactly one owner; zero owners is rejected (item 2)" },
     { "example": "organization-policy.two-owners.json", "schema": "organization-policy.schema.json", "version": "v1alpha2", "reason": "memberships must contain exactly one owner; two owners is rejected (item 2)" },
     { "example": "organization-policy.mixed-case-org-id.json", "schema": "organization-policy.schema.json", "version": "v1alpha2", "reason": "OrganizationId is lowercase-canonical so it round-trips inside a PackageScope (item 5)" },
-    { "example": "deployment-modality.managed-personal.json", "schema": "deployment-modality.schema.json", "version": "v1alpha2", "reason": "managed modality presupposes team/organization edition, not personal" }
+    { "example": "deployment-modality.managed-personal.json", "schema": "deployment-modality.schema.json", "version": "v1alpha2", "reason": "managed modality presupposes team/organization edition, not personal" },
+
+    { "example": "secret-bundle-ref.with-value.json", "schema": "secret-bundle-ref.schema.json", "version": "v1alpha2", "reason": "a ref carries only ref_name+service; embedding a plaintext value is forbidden (no plaintext secret values)" },
+    { "example": "personal-stack.hub-dependency.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "spec.hub is pinned const none; Personal has NO Hub dependency (no Hub dependency invariant)" },
+    { "example": "personal-stack.wrong-stack-id.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "metadata.stack_id is pinned const personal-local-v1 (fixed stack identity)" },
+    { "example": "personal-stack.no-provider.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "llm.providers has minItems 1; at least one of anthropic/openai must be configured (one-or-both provider refs)" },
+    { "example": "personal-stack.foreign-provider.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "llm.providers[].provider enum is anthropic/openai only; ollama is not a default bootstrap provider" },
+    { "example": "personal-stack.plaintext-secret.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "a provider entry forbids value/api_key/token/key fields; keys come by reference only (no plaintext secret values)" },
+    { "example": "personal-stack.multi-user.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "spec.boundaries.multi_user is pinned const false; Personal is single-owner (multi-user prohibition)" },
+    { "example": "assistant-handoff.setup-md-source-of-truth.json", "schema": "assistant-handoff.schema.json", "version": "v1alpha2", "reason": "setup_md.is_source_of_truth is pinned const false; the handoff Markdown must never be the machine source of truth" }
   ]
 }

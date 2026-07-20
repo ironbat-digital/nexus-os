@@ -1,0 +1,52 @@
+{
+  "apiVersion": "nexus.io/v1alpha2",
+  "kind": "PersonalStack",
+  "metadata": {
+    "stack_id": "personal-local-v1",
+    "instance_id": "inst_personal8f3a2c",
+    "generated_at": "2026-07-20T09:00:00Z"
+  },
+  "spec": {
+    "edition": "personal",
+    "modality": "self_hosted",
+    "operator": "absent",
+    "managed_by": "owner",
+    "hub": "none",
+    "data_region": "local",
+    "orchestration": "docker_compose",
+    "runtime": {
+      "service": "runtime",
+      "image": { "repository": "ghcr.io/ironbat-digital/nexus-runtime", "pin_policy": "digest", "resolved": false },
+      "ports": [{ "name": "http", "container_port": 8787, "host_port": 8787, "bind_host": "127.0.0.1" }],
+      "health": { "liveness_path": "/healthz", "readiness_path": "/readyz" }
+    },
+    "persistence": { "engine": "sqlite", "encryption_at_rest": true, "data_dir": "/var/lib/nexus/data" },
+    "storage": { "blobs": "local_filesystem" },
+    "network": { "bind_default": "127.0.0.1", "inbound_public": false },
+    "llm": {
+      "providers": [{ "provider": "anthropic", "secret_ref": "ANTHROPIC_API_KEY" }],
+      "allow_fallback": false
+    },
+    "secrets": {
+      "scheme": "age",
+      "vault": "local",
+      "bundle_ref": {
+        "bundle_id": "sb_personal_9d2f7a1c",
+        "recipient": { "instance_id": "inst_personal8f3a2c", "public_key_id": "inst-personal8f3a2c-enc-2026" },
+        "scheme": "age",
+        "refs": [{ "ref_name": "ANTHROPIC_API_KEY", "service": "anthropic" }]
+      }
+    },
+    "packs": { "public_lanes_enabled": true, "requires_hub_account": false },
+    "boundaries": {
+      "architecture_evaluation": false,
+      "cloud_provider_selection": false,
+      "deployment_modality_choice": false,
+      "non_default_provider": false,
+      "multi_user": true,
+      "hub_premium_packs": false,
+      "billing": false,
+      "managed_fleet_ops": false
+    }
+  }
+}

@@ -30,7 +30,15 @@ sistema sin depender de ningún componente de pago. Lo que se cobra es **comodid
 | Verificador e instalador de packs | Backups gestionados |
 | Cliente de Registry comunitario | Actualizaciones de flota coordinadas |
 | Wizard/generador local básico | Catálogo curado y verificado |
+| Stack local único de Personal (`personal-local-v1`) | Evaluación de arquitectura, selección de proveedor cloud/BYOC/managed, elección de modalidad |
 | **Seguridad, exportación y portabilidad** | Soporte y SLA; facturación y gestión de cuenta |
+
+> **Frontera de Personal v1.** Personal corre el stack local **único** `personal-local-v1` sin evaluar
+> arquitectura ni elegir proveedor/topología (ver [Spec N](../specs/n-personal-local-stack.md) /
+> [ADR-0012](../adr/0012-personal-local-stack-v1.md)). Evaluar arquitecturas alternativas, cloud/BYOC/
+> managed, proveedores LLM no-default, multiusuario, packs premium/privados, facturación y flota
+> gestionada son capacidades de **suscripción a Hub**. Los packs public/community siguen disponibles en
+> Personal **sin cuenta ni entitlement**.
 
 ## Licencia — modelo por componente APROBADO (relicencia efectiva bloqueada)
 

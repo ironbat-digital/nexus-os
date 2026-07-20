@@ -4,7 +4,12 @@
 - **Versión de arquitectura:** `v1alpha2`
 - **Fecha:** 2026-07-19
 - **Contratos:** [`deployment-modality.schema.json`](../schemas/v1alpha2/deployment-modality.schema.json), [`edition.declaration.schema.json`](../schemas/v1alpha2/edition.declaration.schema.json)
-- **Relacionadas:** [ADR-0010](../adr/0010-edition-vs-deployment-modality.md), [Spec D](d-operator-instance-lifecycle.md)
+- **Relacionadas:** [ADR-0010](../adr/0010-edition-vs-deployment-modality.md), [ADR-0012](../adr/0012-personal-local-stack-v1.md), [Spec D](d-operator-instance-lifecycle.md), [Spec N](n-personal-local-stack.md)
+
+> **Personal no elige modalidad.** Aunque modalidad y edición son ejes ortogonales, Personal v1 fija
+> `self_hosted` local por construcción (stack único `personal-local-v1`); el bootstrap no ofrece BYOC ni
+> managed. Cambiar de modalidad, evaluar arquitectura o elegir proveedor cloud son capacidades de
+> **suscripción a Hub** (ver [Spec N](n-personal-local-stack.md) / [ADR-0012](../adr/0012-personal-local-stack-v1.md)).
 
 ## 1. Problema y contexto
 

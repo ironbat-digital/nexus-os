@@ -6,8 +6,16 @@
 - **Documento canónico único** de las herramientas de línea de comandos, SDK, instalador/bootstrap y
   automatización de handoff a asistentes. Consolida lo que antes estaba disperso (wizard/handoff en
   Console, `nexus-core` SDK planeado, bootstrap local) en una única especificación con ownership claro.
-- **Contratos:** [`nexus.blueprint`](../schemas/v1alpha1/nexus.blueprint.schema.json), [`setup.plan`](../schemas/v1alpha1/setup.plan.schema.json), [`setup.task`](../schemas/v1alpha1/setup.task.schema.json), [`secrets-bundle-manifest`](../schemas/v1alpha1/secrets-bundle-manifest.schema.json).
-- **Relacionadas:** [arquitectura](../architecture/nexus-os-architecture.md), [Spec B (Hub §6 handoff)](b-nexus-hub.md), [Spec D](d-operator-instance-lifecycle.md), [Spec H](h-security-trust-signing-secrets.md), [ADR-0005](../adr/0005-secrets-bundle-and-oauth.md).
+- **Contratos:** [`nexus.blueprint`](../schemas/v1alpha1/nexus.blueprint.schema.json), [`setup.plan`](../schemas/v1alpha1/setup.plan.schema.json), [`setup.task`](../schemas/v1alpha1/setup.task.schema.json), [`secrets-bundle-manifest`](../schemas/v1alpha1/secrets-bundle-manifest.schema.json), [`personal-stack`](../schemas/v1alpha2/personal-stack.schema.json), [`assistant-handoff`](../schemas/v1alpha2/assistant-handoff.schema.json), [`secret-bundle-ref`](../schemas/v1alpha2/secret-bundle-ref.schema.json).
+- **Relacionadas:** [arquitectura](../architecture/nexus-os-architecture.md), [Spec B (Hub §6 handoff)](b-nexus-hub.md), [Spec D](d-operator-instance-lifecycle.md), [Spec H](h-security-trust-signing-secrets.md), [Spec N](n-personal-local-stack.md), [ADR-0005](../adr/0005-secrets-bundle-and-oauth.md), [ADR-0012](../adr/0012-personal-local-stack-v1.md).
+
+> **Bootstrap de Personal (`personal-local-v1`).** Para la edición Personal, la **fuente de verdad
+> máquina** del handoff es el lock [`PersonalStack`](../schemas/v1alpha2/personal-stack.schema.json); el
+> `SETUP.md` es un **render** sin secretos (`AssistantHandoff.setup_md.is_source_of_truth: false`,
+> `contains_plaintext_secrets: false`). El asistente actúa con rol `setup_executor` y nunca recibe un
+> secreto en claro; las claves LLM (Anthropic/OpenAI, al menos una) van **por referencia** vía
+> [`secret-bundle-ref`](../schemas/v1alpha2/secret-bundle-ref.schema.json). Detalle en
+> [Spec N](n-personal-local-stack.md).
 
 ## 1. Estado actual vs. objetivo
 
