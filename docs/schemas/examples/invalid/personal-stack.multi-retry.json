@@ -66,8 +66,8 @@
     "llm": {
       "providers": [
         {
-          "provider": "ollama",
-          "secret_ref": "OLLAMA_API_KEY"
+          "provider": "anthropic",
+          "secret_ref": "ANTHROPIC_API_KEY"
         },
         {
           "provider": "openai",
@@ -79,7 +79,7 @@
         "openai"
       ],
       "retry": {
-        "max_retries": 1,
+        "max_retries": 2,
         "backoff": "exponential"
       },
       "provider_fallback": false

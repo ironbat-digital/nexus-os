@@ -170,6 +170,48 @@ def check_invariants() -> None:
     boundaries_ok = all(v is False for v in spec["boundaries"].values())
     (record_pass if boundaries_ok else record_fail)("all Personal boundaries pinned false")
 
+    # single runtime process embeds API + reconciliation operator + Console
+    components_ok = spec["runtime"]["components"] == ["api", "reconciliation_operator", "console"]
+    (record_pass if components_ok else record_fail)(
+        "one runtime process embeds [api, reconciliation_operator, console]"
+    )
+
+    # loopback bind fixed at 127.0.0.1:8787
+    ports = spec["runtime"]["ports"]
+    bind_ok = (
+        len(ports) == 1
+        and ports[0]["bind_host"] == "127.0.0.1"
+        and ports[0]["container_port"] == 8787
+        and ports[0]["host_port"] == 8787
+    )
+    (record_pass if bind_ok else record_fail)("runtime bound exactly to 127.0.0.1:8787")
+
+    # SQLite WAL at exactly /data/nexus.db
+    pers = spec["persistence"]
+    db_ok = (
+        pers["engine"] == "sqlite"
+        and pers["encryption_at_rest"] is True
+        and pers["db_path"] == "/data/nexus.db"
+        and pers["journal_mode"] == "WAL"
+    )
+    (record_pass if db_ok else record_fail)("SQLite WAL at exactly /data/nexus.db")
+
+    # artifact storage at exactly /data/artifacts
+    storage_ok = spec["storage"]["blobs"] == "local_filesystem" and spec["storage"]["path"] == "/data/artifacts"
+    (record_pass if storage_ok else record_fail)("artifact storage at exactly /data/artifacts")
+
+    # deterministic provider order, one retry, no provider fallback, distinct providers
+    llm = spec["llm"]
+    order_ok = llm["priority"] == ["anthropic", "openai"]
+    (record_pass if order_ok else record_fail)("deterministic provider order == [anthropic, openai]")
+    provider_names = [p["provider"] for p in providers]
+    unique_ok = len(provider_names) == len(set(provider_names))
+    (record_pass if unique_ok else record_fail)("each configured provider appears at most once")
+    retry_ok = llm["retry"]["max_retries"] == 1
+    (record_pass if retry_ok else record_fail)("exactly one retry per provider request (max_retries == 1)")
+    fallback_ok = llm["provider_fallback"] is False
+    (record_pass if fallback_ok else record_fail)("no fallback to a different provider (provider_fallback == false)")
+
     # no plaintext secret values anywhere in the Personal bootstrap contracts.
     # Scope: the secret-carrying Personal fixtures (LLM connector keys / secret bundle).
     # Public cryptographic signatures (signature.value) are intentionally public and out of scope.

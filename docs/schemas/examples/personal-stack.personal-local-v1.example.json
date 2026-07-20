@@ -18,6 +18,7 @@
     "orchestration": "docker_compose",
     "runtime": {
       "service": "runtime",
+      "components": ["api", "reconciliation_operator", "console"],
       "image": {
         "repository": "ghcr.io/ironbat-digital/nexus-runtime",
         "pin_policy": "digest",
@@ -40,13 +41,13 @@
     "persistence": {
       "engine": "sqlite",
       "encryption_at_rest": true,
-      "data_dir": "/var/lib/nexus/data",
+      "db_path": "/data/nexus.db",
       "journal_mode": "WAL",
       "migrations": "auto_on_start"
     },
     "storage": {
       "blobs": "local_filesystem",
-      "path": "/var/lib/nexus/blobs"
+      "path": "/data/artifacts"
     },
     "network": {
       "bind_default": "127.0.0.1",
@@ -59,7 +60,8 @@
         { "provider": "openai", "secret_ref": "OPENAI_API_KEY" }
       ],
       "priority": ["anthropic", "openai"],
-      "allow_fallback": true
+      "retry": { "max_retries": 1, "backoff": "exponential" },
+      "provider_fallback": false
     },
     "secrets": {
       "scheme": "age",

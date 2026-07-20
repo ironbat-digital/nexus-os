@@ -33,7 +33,7 @@
           "name": "http",
           "container_port": 8787,
           "host_port": 8787,
-          "bind_host": "127.0.0.1"
+          "bind_host": "0.0.0.0"
         }
       ],
       "health": {
@@ -66,8 +66,8 @@
     "llm": {
       "providers": [
         {
-          "provider": "ollama",
-          "secret_ref": "OLLAMA_API_KEY"
+          "provider": "anthropic",
+          "secret_ref": "ANTHROPIC_API_KEY"
         },
         {
           "provider": "openai",

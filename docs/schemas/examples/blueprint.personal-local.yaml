@@ -27,7 +27,9 @@ spec:
       coordinator: "anthropic"
       worker: "anthropic"
       embeddings: "openai"
-    allow_fallback: true
+    # Personal Local Stack v1 locks deterministic routing with one retry and NO provider fallback;
+    # the PersonalStack lock (spec.llm.provider_fallback:false) is the machine source of truth.
+    allow_fallback: false
   memory:
     driver: sqlite
     graph: false

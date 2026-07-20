@@ -31,15 +31,21 @@ Personal en [Spec A](../specs/a-personal-runtime.md), cifrado de secretos age/X2
 Componentes fijados (TARGET-STATE; ver [Spec N](../specs/n-personal-local-stack.md) para el detalle):
 
 - **Orquestación:** un único proyecto Docker Compose (`docker compose up` como camino base).
-- **Runtime:** un servicio contenedor `runtime`. La imagen se declara con `resolved: false` — es un
+- **Runtime:** **un único** servicio contenedor `runtime` que embebe exactamente
+  `components: [api, reconciliation_operator, console]` (el operador de reconciliación es *in-process* y
+  local; no es el Hub Operator, que está `absent`). La imagen se declara con `resolved: false` — es un
   marcador TARGET-STATE, **no** se afirma que exista una imagen descargable; el digest inmutable se fija
   en el release.
-- **Persistencia:** SQLite embebido, cifrado en reposo, en un volumen local. Sin Postgres/pgvector/qdrant.
-- **Almacenamiento:** sistema de ficheros local para blobs/exports. Sin S3/MinIO.
-- **Red:** enlace a `127.0.0.1` por defecto, sin escucha entrante pública.
-- **LLM:** conectores **Anthropic y/o OpenAI**. Al menos uno debe configurarse; ambos se permiten. Ningún
-  otro proveedor forma parte del bootstrap por defecto. Las claves se aportan **solo por referencia**
-  (nombre lógico), nunca por valor.
+- **Persistencia:** SQLite embebido, cifrado en reposo, `journal_mode` **WAL** en `/data/nexus.db`
+  (valores fijados por `const`). Sin Postgres/pgvector/qdrant.
+- **Almacenamiento:** sistema de ficheros local para artefactos/blobs/exports en `/data/artifacts`
+  (`const`). Sin S3/MinIO.
+- **Red:** enlace exacto a `127.0.0.1:8787` (loopback, un solo puerto, `const`), sin escucha entrante
+  pública.
+- **LLM:** conectores **Anthropic y/o OpenAI**. Al menos uno debe configurarse; ambos se permiten y deben
+  ser distintos. Ningún otro proveedor forma parte del bootstrap por defecto. Las claves se aportan **solo
+  por referencia** (nombre lógico), nunca por valor. Orden determinista `[anthropic, openai]`, exactamente
+  **un reintento** por petición de proveedor y **sin fallback** a un proveedor distinto tras el fallo.
 - **Secretos:** esquema age, vault local, importados por un bundle cifrado
   ([ADR-0005](0005-secrets-bundle-and-oauth.md)); referenciados por `secret-bundle-ref`.
 - **Packs:** carriles públicos/community habilitados **sin cuenta ni entitlement** de Hub.

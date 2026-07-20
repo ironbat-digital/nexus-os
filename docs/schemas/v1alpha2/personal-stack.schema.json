@@ -40,7 +40,7 @@
           "const": "self_hosted",
           "description": "Always self_hosted. Local deployment if hardware permits."
         },
-        "operator": { "const": "absent", "description": "No Operator: Personal has no Hub control channel." },
+        "operator": { "const": "absent", "description": "Hub Operator (the remote Hub control channel / enrollment agent) is ABSENT. This is distinct from the in-process `reconciliation_operator` component that the single `runtime` service embeds (see spec.runtime.components): Personal reconciles desired vs actual state locally, with no Hub control plane." },
         "managed_by": { "const": "owner", "description": "The single owner runs everything." },
         "hub": { "const": "none", "description": "Personal has NO Hub dependency at any point." },
         "data_region": { "const": "local", "description": "Data never leaves the local instance." },
@@ -48,9 +48,14 @@
         "runtime": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["service", "image", "ports", "health"],
+          "required": ["service", "components", "image", "ports", "health"],
           "properties": {
             "service": { "const": "runtime", "description": "The single Compose service running the Nexus OS Runtime/Platform." },
+            "components": {
+              "type": "array",
+              "const": ["api", "reconciliation_operator", "console"],
+              "description": "The ONE `runtime` process embeds exactly these three in-process components: the API, the local reconciliation operator (desired-vs-actual state, no Hub control channel), and the embedded Console. Personal never splits these into separate services."
+            },
             "image": {
               "type": "object",
               "additionalProperties": false,
@@ -66,15 +71,17 @@
             "ports": {
               "type": "array",
               "minItems": 1,
+              "maxItems": 1,
+              "description": "Exactly one published port: the loopback HTTP listener bound to 127.0.0.1:8787.",
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["name", "container_port", "bind_host"],
+                "required": ["name", "container_port", "host_port", "bind_host"],
                 "properties": {
                   "name": { "$ref": "https://schemas.nexusos.dev/v1alpha1/common.defs.schema.json#/$defs/Slug" },
-                  "container_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
-                  "host_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
-                  "bind_host": { "const": "127.0.0.1", "description": "Loopback-only by default; no public inbound port." }
+                  "container_port": { "const": 8787, "description": "Fixed container port." },
+                  "host_port": { "const": 8787, "description": "Fixed host port." },
+                  "bind_host": { "const": "127.0.0.1", "description": "Loopback-only; no public inbound port." }
                 }
               }
             },
@@ -104,22 +111,22 @@
         "persistence": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["engine", "encryption_at_rest", "data_dir"],
+          "required": ["engine", "encryption_at_rest", "db_path", "journal_mode"],
           "properties": {
             "engine": { "const": "sqlite", "description": "Embedded SQLite. No Postgres/pgvector/qdrant/chroma in the default Personal stack." },
             "encryption_at_rest": { "const": true },
-            "data_dir": { "type": "string", "minLength": 1, "description": "Local volume path holding the database and instance state." },
-            "journal_mode": { "type": "string", "enum": ["WAL", "DELETE"], "default": "WAL" },
+            "db_path": { "const": "/data/nexus.db", "description": "Fixed absolute path of the embedded SQLite database file on the local volume." },
+            "journal_mode": { "const": "WAL", "description": "SQLite runs in WAL mode." },
             "migrations": { "type": "string", "enum": ["auto_on_start", "manual"], "description": "How schema migrations run locally." }
           }
         },
         "storage": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["blobs"],
+          "required": ["blobs", "path"],
           "properties": {
-            "blobs": { "const": "local_filesystem", "description": "Blobs/exports on a local filesystem volume. No S3/MinIO in the default stack." },
-            "path": { "type": "string", "minLength": 1 }
+            "blobs": { "const": "local_filesystem", "description": "Blobs/exports/artifacts on a local filesystem volume. No S3/MinIO in the default stack." },
+            "path": { "const": "/data/artifacts", "description": "Fixed absolute path of the local artifact store." }
           }
         },
         "network": {
@@ -135,14 +142,15 @@
         "llm": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["providers", "allow_fallback"],
-          "description": "First-run LLM connectors. At least one of anthropic/openai MUST be configured; both MAY be. No other provider is part of the default Personal bootstrap. Keys are supplied BY REFERENCE only.",
+          "required": ["providers", "priority", "retry", "provider_fallback"],
+          "description": "First-run LLM connectors. At least one of anthropic/openai MUST be configured; both MAY be. No other provider is part of the default Personal bootstrap. Keys are supplied BY REFERENCE only. Routing is deterministic (anthropic then openai), each provider request is tried exactly once and then retried exactly once on failure, and there is NO fallback to a different provider after that.",
           "properties": {
             "providers": {
               "type": "array",
               "minItems": 1,
               "maxItems": 2,
-              "description": "Configured connectors. minItems 1 enforces the one-or-both rule; the item enum forbids any provider other than anthropic/openai.",
+              "uniqueItems": true,
+              "description": "Configured connectors. minItems 1 enforces the one-or-both rule; the item enum forbids any provider other than anthropic/openai. A provider MUST NOT appear twice (enforced additionally by the harness).",
               "items": {
                 "type": "object",
                 "additionalProperties": false,
@@ -170,13 +178,22 @@
             },
             "priority": {
               "type": "array",
-              "uniqueItems": true,
-              "items": { "type": "string", "enum": ["anthropic", "openai"] },
-              "description": "Ordered provider preference used when both are configured (defaults to [anthropic, openai]). ROUTING priority only — no model SKU, plan or purchasing is hardcoded."
+              "const": ["anthropic", "openai"],
+              "description": "Deterministic global provider preference order: anthropic then openai. The runtime selects the highest-priority CONFIGURED provider. ROUTING priority only — no model SKU, plan or purchasing is hardcoded."
             },
-            "allow_fallback": {
-              "type": "boolean",
-              "description": "When the priority provider is unavailable, fall back to the next configured provider. Only meaningful when both are configured."
+            "retry": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["max_retries"],
+              "description": "Retry policy for a single provider request.",
+              "properties": {
+                "max_retries": { "const": 1, "description": "Exactly one retry: one initial attempt plus one retry of the SAME provider on failure, then give up." },
+                "backoff": { "type": "string", "enum": ["none", "fixed", "exponential"], "description": "Optional backoff strategy for the single retry." }
+              }
+            },
+            "provider_fallback": {
+              "const": false,
+              "description": "No fallback to a DIFFERENT provider after the selected provider's request (and its one retry) fails. The request fails; the runtime does not switch providers."
             }
           }
         },

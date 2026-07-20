@@ -24,6 +24,12 @@
     { "example": "personal-stack.foreign-provider.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "llm.providers[].provider enum is anthropic/openai only; ollama is not a default bootstrap provider" },
     { "example": "personal-stack.plaintext-secret.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "a provider entry forbids value/api_key/token/key fields; keys come by reference only (no plaintext secret values)" },
     { "example": "personal-stack.multi-user.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "spec.boundaries.multi_user is pinned const false; Personal is single-owner (multi-user prohibition)" },
+    { "example": "personal-stack.provider-fallback.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "spec.llm.provider_fallback is pinned const false; no fallback to a different provider after failure" },
+    { "example": "personal-stack.wrong-priority.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "spec.llm.priority is pinned const [anthropic, openai]; deterministic order cannot be reversed" },
+    { "example": "personal-stack.duplicate-provider.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "spec.llm.providers is uniqueItems; the same provider must not appear twice" },
+    { "example": "personal-stack.multi-retry.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "spec.llm.retry.max_retries is pinned const 1; exactly one retry of a provider request" },
+    { "example": "personal-stack.split-runtime.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "spec.runtime.components is pinned const [api, reconciliation_operator, console]; the single runtime process cannot drop the reconciliation operator" },
+    { "example": "personal-stack.public-bind.json", "schema": "personal-stack.schema.json", "version": "v1alpha2", "reason": "spec.runtime.ports[].bind_host is pinned const 127.0.0.1; no public/0.0.0.0 bind" },
     { "example": "assistant-handoff.setup-md-source-of-truth.json", "schema": "assistant-handoff.schema.json", "version": "v1alpha2", "reason": "setup_md.is_source_of_truth is pinned const false; the handoff Markdown must never be the machine source of truth" }
   ]
 }

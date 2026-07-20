@@ -44,12 +44,12 @@ harness lo verifica.
 | Área | Decisión fija | Notas |
 |------|---------------|-------|
 | Orquestación | un proyecto **Docker Compose** | `docker compose up` como camino base ([Spec K](k-cli-sdk-installer-handoff.md)) |
-| Runtime | un servicio `runtime` | imagen con `resolved:false` (marcador TARGET-STATE; **no** hay imagen descargable afirmada) |
-| Puertos | `127.0.0.1:8787` (http) | `bind_host` fijado a loopback |
-| Persistencia | **SQLite** embebido, cifrado en reposo | `data_dir` en volumen local; `journal_mode: WAL`; migraciones `auto_on_start` |
-| Almacenamiento | sistema de ficheros local | blobs/exports; sin S3/MinIO |
+| Runtime | **un** servicio `runtime` (proceso único) | embebe exactamente `components: [api, reconciliation_operator, console]`; imagen con `resolved:false` (marcador TARGET-STATE; **no** hay imagen descargable afirmada) |
+| Puertos | `127.0.0.1:8787` (http) | fijado por contrato: `bind_host`, `container_port` y `host_port` son `const` (loopback exacto, un solo puerto) |
+| Persistencia | **SQLite** embebido, cifrado en reposo | `db_path` fijado a `const /data/nexus.db`; `journal_mode: const WAL`; migraciones `auto_on_start` |
+| Almacenamiento | sistema de ficheros local | artefactos/blobs/exports en `path: const /data/artifacts`; sin S3/MinIO |
 | Red | enlace `127.0.0.1`, sin escucha pública | `inbound_public:false`; TLS opcional en loopback |
-| LLM | conectores **Anthropic y/o OpenAI** | al menos uno; ambos permitidos; claves **por referencia** |
+| LLM | conectores **Anthropic y/o OpenAI** | al menos uno; ambos permitidos; claves **por referencia**; orden determinista, un reintento, sin fallback de proveedor |
 | Secretos | esquema **age**, vault local | importados por bundle cifrado ([ADR-0005](../adr/0005-secrets-bundle-and-oauth.md)) |
 | Voz | sidecar opcional (Voicebox, [Spec M](m-local-inference-voice-edge.md)) | apagado por defecto; su ausencia degrada solo la voz |
 | Packs | carriles public/community | sin cuenta ni entitlement de Hub |
@@ -84,10 +84,14 @@ separado, no el arranque por defecto.
 - `spec.llm.providers`: `minItems 1`, `maxItems 2`; `provider ∈ {anthropic, openai}`.
 - `secret_ref` es el **nombre** del secreto (p. ej. `ANTHROPIC_API_KEY`), nunca un valor. El esquema
   prohíbe `value/secret/plaintext/api_key/token/key` en la entrada del proveedor.
-- `priority` (opcional): orden de preferencia cuando ambos están configurados; por defecto
-  `[anthropic, openai]`. Es **routing**, no fija SKU, plan ni compra de modelos.
-- `allow_fallback`: si el proveedor prioritario no está disponible, cae al siguiente configurado (solo
-  tiene sentido con ambos).
+- `priority` (obligatorio): orden **determinista** fijado a `const [anthropic, openai]`. El runtime usa el
+  proveedor configurado de mayor prioridad. Es **routing**, no fija SKU, plan ni compra de modelos.
+- `retry.max_retries` (obligatorio): `const 1`. Cada petición a un proveedor se intenta una vez y se
+  **reintenta exactamente una vez** ante fallo; después se abandona.
+- `provider_fallback` (obligatorio): `const false`. Tras agotar el reintento del proveedor seleccionado
+  **no** se conmuta a un proveedor distinto; la petición falla.
+- `providers`: `uniqueItems`; un mismo proveedor no aparece dos veces (el harness verifica proveedores
+  distintos).
 
 ## 6. Fuente de verdad y handoff
 
@@ -122,10 +126,15 @@ Secuencia (mapea 1:1 a `setup.plan.personal-local.yaml`):
 - **Uno o ambos proveedores por referencia:** `providers` 1–2, `anthropic/openai`, solo `secret_ref`.
 - **Sin valores de secreto en claro** en los fixtures de bootstrap Personal.
 - **Packs públicos sin entitlement.**
+- **Proceso único:** `runtime.components == [api, reconciliation_operator, console]`.
+- **Enlace fijo:** `127.0.0.1:8787` (un solo puerto).
+- **Persistencia fija:** SQLite WAL en `/data/nexus.db`; artefactos en `/data/artifacts`.
+- **Ruteo LLM:** orden `[anthropic, openai]`, `max_retries == 1`, `provider_fallback == false`, proveedores distintos.
 - **El `SETUP.md` no es fuente de verdad** y no contiene secretos.
 
-Fixtures negativos (uno por motivo): `hub-dependency`, `wrong-stack-id`, `no-provider`,
-`foreign-provider`, `plaintext-secret`, `multi-user` (PersonalStack); `with-value`
+Fixtures negativos (uno por invariante): `hub-dependency`, `wrong-stack-id`, `no-provider`,
+`foreign-provider`, `plaintext-secret`, `multi-user`, `provider-fallback`, `wrong-priority`,
+`duplicate-provider`, `multi-retry`, `split-runtime`, `public-bind` (PersonalStack); `with-value`
 (secret-bundle-ref); `setup-md-source-of-truth` (AssistantHandoff).
 
 ## 9. Licencia y estado

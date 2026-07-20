@@ -66,12 +66,12 @@
     "llm": {
       "providers": [
         {
-          "provider": "ollama",
-          "secret_ref": "OLLAMA_API_KEY"
+          "provider": "anthropic",
+          "secret_ref": "ANTHROPIC_API_KEY"
         },
         {
-          "provider": "openai",
-          "secret_ref": "OPENAI_API_KEY"
+          "provider": "anthropic",
+          "secret_ref": "ANTHROPIC_API_KEY"
         }
       ],
       "priority": [
