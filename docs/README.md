@@ -50,6 +50,7 @@ Existe **exactamente un** documento canónico por rol. Cada spec de componente e
 | k | [CLI, SDK, instalador y handoff](specs/k-cli-sdk-installer-handoff.md) | Herramientas OSS y automatización de handoff | Canónica |
 | l | [Observabilidad, auditoría y ops](specs/l-observability-audit-ops.md) | Telemetría, backup/recuperación, soporte | Canónica |
 | m | [Inferencia local, voz y edge](specs/m-local-inference-voice-edge.md) | LiteRT, Voicebox, VAD (ownership + enlaces) | Canónica (parcial ACTUAL) |
+| n | [Stack local de Personal v1 y bootstrap](specs/n-personal-local-stack.md) | Stack local único `personal-local-v1` + contrato de bootstrap/handoff | Canónica |
 
 Índice detallado: [`specs/README.md`](specs/README.md).
 
@@ -75,11 +76,12 @@ Existe **exactamente un** documento canónico por rol. Cada spec de componente e
 - [ADR-0009 — Ediciones, entitlements y degradación](adr/0009-editions-entitlements-and-subscription-degradation.md)
 - [ADR-0010 — Edición vs modalidad de despliegue](adr/0010-edition-vs-deployment-modality.md)
 - [ADR-0011 — Arquitectura de documentación y canonicidad](adr/0011-documentation-architecture.md)
+- [ADR-0012 — Stack local único de Personal v1](adr/0012-personal-local-stack-v1.md)
 
 ### Esquemas y ejemplos (`v1alpha1` + `v1alpha2`)
 - [Índice de esquemas](schemas/README.md) — JSON Schema 2020-12.
 - Esquemas: [`v1alpha1/`](schemas/v1alpha1/) · [`v1alpha2/`](schemas/v1alpha2/) · Ejemplos: [`examples/`](schemas/examples/) (válidos e [`invalid/`](schemas/examples/invalid/)).
-- Validación y guardas de contrato: la suite de referencia (`test_managed_platform_schemas.py`: esquemas, fixtures negativos, invariantes, enlaces relativos y unicidad canónica) vive en la implementación **upstream** (Console/Runtime); no se incluye en este repositorio de docs y contratos.
+- Validación y guardas de contrato: el harness autocontenido [`tests/validate_contracts.py`](../tests/validate_contracts.py) (esquemas, ejemplos, fixtures negativos e invariantes del stack Personal) se incluye **en este repo**; la suite de referencia (`test_managed_platform_schemas.py`: sobre de firma, enlaces relativos y unicidad canónica) vive además en la implementación **upstream** (Console/Runtime).
 
 ## Documentos superados (conservados como redirección)
 

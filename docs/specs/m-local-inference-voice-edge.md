@@ -7,7 +7,13 @@
   inferencia local, voz y edge. **No duplica** la documentación técnica detallada de implementación: la
   referencia y enlaza. Estas capacidades **son de primera clase**; existe código real (LiteRT.js,
   Voicebox, Silero VAD) en el **runtime/console upstream**, no en este repositorio de docs y contratos.
-- **Relacionadas:** [arquitectura](../architecture/nexus-os-architecture.md), [Spec A (Personal Runtime)](a-personal-runtime.md), [Spec F (modelo de paquetes)](f-package-artifact-model.md), [Spec H](h-security-trust-signing-secrets.md).
+- **Relacionadas:** [arquitectura](../architecture/nexus-os-architecture.md), [Spec A (Personal Runtime)](a-personal-runtime.md), [Spec F (modelo de paquetes)](f-package-artifact-model.md), [Spec H](h-security-trust-signing-secrets.md), [Spec N (stack local de Personal)](n-personal-local-stack.md).
+
+> **Nota sobre el stack por defecto de Personal.** El stack local único `personal-local-v1`
+> ([Spec N](n-personal-local-stack.md)) usa inferencia **hospedada** Anthropic/OpenAI en el primer
+> arranque; el sidecar de voz (Voicebox) es **opcional** y está apagado por defecto (su ausencia degrada
+> solo la voz). La inferencia totalmente local descrita aquí es un perfil avanzado, no el arranque por
+> defecto.
 - **Documentación técnica de implementación (autoritativa, upstream):** la conversión determinista VAD
   (ONNX → LiteRT/TFLite) y los modelos Silero VAD se documentan en el código del runtime/console upstream
   (`tools/vad-conversion/`, `web/public/models/silero-vad/`). Este repositorio contiene solo la

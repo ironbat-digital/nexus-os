@@ -112,6 +112,13 @@ propietario. Runtime completo, áreas, agentes, memoria, packs public/community,
 exportación total, sin Hub y sin login. Es la base OSS del producto y permanece gratuita
 indefinidamente.
 
+Personal v1 tiene **exactamente un stack de despliegue local, predefinido y opinado**
+(`personal-local-v1`): no pide al dueño evaluar arquitectura, elegir proveedor de nube, base de datos ni
+topología. El único setup de LLM en el primer arranque es un token de conector para **Anthropic y/o
+OpenAI** (al menos uno). Evaluar arquitecturas alternativas, cloud/BYOC/managed, otros proveedores o
+multiusuario es una **capacidad de suscripción a Hub**. Ver [Spec N](../specs/n-personal-local-stack.md)
+y [ADR-0012](../adr/0012-personal-local-stack-v1.md).
+
 ## 8. Suscripción al Hub y capacidades de Team/Organization
 
 Las capacidades oficiales multiusuario, de equipo y de organización, junto con los paquetes premium y

@@ -30,8 +30,10 @@ riesgos/preguntas abiertas. Cuando una sección no aplica, se indica el motivo.
 | k | [CLI, SDK, instalador/bootstrap y handoff](k-cli-sdk-installer-handoff.md) | Herramientas OSS y automatización de handoff a asistentes. |
 | l | [Observabilidad, auditoría y operaciones](l-observability-audit-ops.md) | Telemetría, audit dual, backup/recuperación, soporte. |
 | m | [Inferencia local, voz y edge](m-local-inference-voice-edge.md) | LiteRT, Voicebox, VAD (ownership canónico + enlaces; parcialmente ACTUAL). |
+| n | [Stack local de Personal v1 y bootstrap](n-personal-local-stack.md) | Stack local único `personal-local-v1` y contrato de bootstrap/handoff; fija fronteras de Personal. |
 
 **Arquitectura:** [system-wide](../architecture/nexus-os-architecture.md). **Contratos relacionados:**
 [`docs/schemas/v1alpha2/`](../schemas/v1alpha2/) y [`v1alpha1/`](../schemas/v1alpha1/). **Validación:**
-suite de referencia upstream (`test_managed_platform_schemas.py`); no incluida en este repo de docs y
-contratos. **Mapa canónico:** [`docs/README.md`](../README.md).
+harness autocontenido [`tests/validate_contracts.py`](../../tests/validate_contracts.py) en este repo, más
+la suite de referencia upstream (`test_managed_platform_schemas.py`). **Mapa canónico:**
+[`docs/README.md`](../README.md).

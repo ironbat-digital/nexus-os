@@ -4,6 +4,35 @@ Registra cambios en la documentación de arquitectura/producto y en los contrato
 (`docs/schemas/`). No sigue la versión del paquete `nexus-console` (SemVer del código); los contratos se
 versionan por separado (`x-nexus-contract-version`). Formato inspirado en Keep a Changelog.
 
+## [personal-local-stack-v1] - 2026-07-20 — Stack local único de Personal v1
+
+**Estado:** TARGET-STATE. Añade contratos `v1alpha2` de forma **aditiva** (nuevos `$id`); no rompe
+esquemas existentes. Licencia sin cambios (repo MIT; objetivo por componente bloqueado por auditoría).
+
+### Añadido
+
+- **ADR:** [ADR-0012](adr/0012-personal-local-stack-v1.md) bloquea el stack local único `personal-local-v1`
+  (Docker Compose + SQLite + loopback + conectores Anthropic/OpenAI por referencia) y las fronteras de
+  Personal frente a las capacidades de suscripción a Hub.
+- **Spec:** [Spec N](specs/n-personal-local-stack.md) con el detalle del stack y el contrato de
+  bootstrap/CLI (preflight → hardware → elegir Anthropic/OpenAI → captura segura → validación → generación
+  de ficheros → handoff → despliegue → salud → packs públicos).
+- **Contratos `v1alpha2`:** [`personal-stack.schema.json`](schemas/v1alpha2/personal-stack.schema.json)
+  (fuente de verdad máquina), [`assistant-handoff.schema.json`](schemas/v1alpha2/assistant-handoff.schema.json)
+  y [`secret-bundle-ref.schema.json`](schemas/v1alpha2/secret-bundle-ref.schema.json).
+- **Fixtures:** ejemplos válidos (`personal-stack`, `assistant-handoff`, `secret-bundle-ref`, blueprint y
+  setup plan `personal-local`) y 8 fixtures negativos (uno por invariante).
+- **Harness en-repo:** [`tests/validate_contracts.py`](../tests/validate_contracts.py) valida esquemas,
+  ejemplos, fixtures negativos e invariantes de Personal.
+
+### Cambiado
+
+- Cross-references en [Spec A](specs/a-personal-runtime.md), [Spec J](specs/j-deployment-modalities.md),
+  [Spec K](specs/k-cli-sdk-installer-handoff.md), [Spec M](specs/m-local-inference-voice-edge.md),
+  [glosario](architecture/glossary.md), [frontera OSS/comercial](architecture/product-oss-boundary.md),
+  visión, arquitectura y los índices ([`docs/README.md`](README.md), [`specs/README.md`](specs/README.md),
+  [`schemas/README.md`](schemas/README.md)).
+
 ## [docs-reorg] - 2026-07-19 — Reorganización canónica de la documentación
 
 **Estado:** solo documentación. No cambia ningún contrato, `$id` ni semántica de esquema.

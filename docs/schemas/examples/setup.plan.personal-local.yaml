@@ -1,0 +1,63 @@
+# EXAMPLE FIXTURE — validates against v1alpha1/setup.plan.schema.json
+# Bootstrap plan for Personal Local Stack v1. Ordered, resumable, no Hub, no secrets in plaintext.
+apiVersion: nexus.io/v1alpha1
+kind: SetupPlan
+metadata:
+  name: personal-local
+  blueprint_version: 1
+  plan_version: 1
+  generated_at: "2026-07-20T09:02:00Z"
+spec:
+  modality: self_hosted
+  human_checklist_ref: SETUP.md
+  tasks:
+    - id: preflight
+      title: "Preflight: verify Docker Compose and local prerequisites"
+      state: ready
+      owner: cowork_assistant
+      evidence: { kind: healthcheck, reference: "docker compose version" }
+    - id: hardware_check
+      title: "Hardware check against the minimum profile (2 vCPU / 4 GB RAM / 20 GB disk)"
+      state: not_started
+      owner: cowork_assistant
+      prerequisites: [preflight]
+    - id: select_llm_providers
+      title: "Prompt owner to choose Anthropic and/or OpenAI (at least one)"
+      state: not_started
+      owner: user
+      prerequisites: [hardware_check]
+    - id: capture_secrets
+      title: "Securely capture provider token(s) into an encrypted age bundle (never plaintext to the assistant)"
+      state: not_started
+      owner: user
+      prerequisites: [select_llm_providers]
+      evidence: { kind: manual_attestation, reference: "secret-bundle-ref.personal.example.json" }
+    - id: validate_connector
+      title: "Validation call: verify each configured provider token before writing files"
+      state: not_started
+      owner: cowork_assistant
+      prerequisites: [capture_secrets]
+      evidence: { kind: api_response, reference: "provider models endpoint 200" }
+    - id: generate_files
+      title: "Generate PersonalStack lock, docker-compose project and SETUP.md from the blueprint"
+      state: not_started
+      owner: cowork_assistant
+      prerequisites: [validate_connector]
+      evidence: { kind: file_hash, reference: "personal-stack.personal-local-v1.example.json" }
+    - id: deploy
+      title: "docker compose up (loopback-only, SQLite, encryption at rest)"
+      state: not_started
+      owner: cowork_assistant
+      prerequisites: [generate_files]
+      rollback: { capability: "compose_down", notes: "Pin the previous image digest; data volume is untouched." }
+    - id: health_verify
+      title: "Verify /healthz and /readyz on 127.0.0.1:8787"
+      state: not_started
+      owner: cowork_assistant
+      prerequisites: [deploy]
+      evidence: { kind: healthcheck, reference: "GET http://127.0.0.1:8787/readyz" }
+    - id: install_public_packs
+      title: "Install public/community packs (no Hub account, offline signature verification)"
+      state: not_started
+      owner: cowork_assistant
+      prerequisites: [health_verify]

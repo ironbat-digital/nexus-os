@@ -29,6 +29,12 @@
     { "example": "package-download-grant.example.json", "schema": "package-download-grant.schema.json", "version": "v1alpha2" },
     { "example": "deployment-modality.personal-self-hosted.example.json", "schema": "deployment-modality.schema.json", "version": "v1alpha2" },
     { "example": "deployment-modality.team-byoc.example.json", "schema": "deployment-modality.schema.json", "version": "v1alpha2" },
-    { "example": "deployment-modality.team-managed.example.json", "schema": "deployment-modality.schema.json", "version": "v1alpha2" }
+    { "example": "deployment-modality.team-managed.example.json", "schema": "deployment-modality.schema.json", "version": "v1alpha2" },
+
+    { "example": "secret-bundle-ref.personal.example.json", "schema": "secret-bundle-ref.schema.json", "version": "v1alpha2" },
+    { "example": "personal-stack.personal-local-v1.example.json", "schema": "personal-stack.schema.json", "version": "v1alpha2" },
+    { "example": "assistant-handoff.personal-local.example.json", "schema": "assistant-handoff.schema.json", "version": "v1alpha2" },
+    { "example": "blueprint.personal-local.yaml", "schema": "nexus.blueprint.schema.json" },
+    { "example": "setup.plan.personal-local.yaml", "schema": "setup.plan.schema.json" }
   ]
 }

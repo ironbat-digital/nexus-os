@@ -98,6 +98,7 @@ Componentes y su especificación canónica:
 | CLI/SDK/instalador/handoff | Herramientas y automatización de bootstrap | [Spec K](../specs/k-cli-sdk-installer-handoff.md) |
 | Observabilidad/auditoría/ops | Telemetría, backup/recuperación, soporte | [Spec L](../specs/l-observability-audit-ops.md) |
 | Inferencia local/voz/edge | LiteRT, Voicebox, VAD (ownership + enlaces) | [Spec M](../specs/m-local-inference-voice-edge.md) |
+| Stack local de Personal v1 | Stack único `personal-local-v1` + bootstrap/handoff | [Spec N](../specs/n-personal-local-stack.md) |
 
 <a id="confianza"></a>
 ## 3. Fronteras de confianza (normativas)
@@ -139,6 +140,11 @@ La **edición** es un eje declarado (`edition.declaration.schema.json`) ortogona
 despliegue. Personal (`personal_base`) no requiere entitlement ni conexión. Team/Organization requieren
 un entitlement firmado vigente (`verified_entitlement`) o cacheado en gracia (`cached_entitlement`). Ver
 [Spec C](../specs/c-team-organization.md) y [Spec G](../specs/g-entitlements-subscriptions-degradation.md).
+
+Personal v1 corre un stack local **único y opinado** (`personal-local-v1`, `personal-stack.schema.json`):
+Docker Compose + SQLite + loopback, con conectores LLM Anthropic/OpenAI por referencia. No evalúa
+arquitectura ni elige proveedor/topología; esas son capacidades de suscripción a Hub. Ver
+[Spec N](../specs/n-personal-local-stack.md) y [ADR-0012](../adr/0012-personal-local-stack-v1.md).
 
 <a id="relaciones"></a>
 ## 7. Relaciones Hub / Operator / Runtime / Registry / Studio

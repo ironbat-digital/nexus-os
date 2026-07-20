@@ -1,0 +1,139 @@
+{
+  "apiVersion": "nexus.io/v1alpha2",
+  "kind": "PersonalStack",
+  "metadata": {
+    "stack_id": "personal-local-v1",
+    "instance_id": "inst_personal8f3a2c",
+    "generated_at": "2026-07-20T09:00:00Z",
+    "blueprint_version": 1,
+    "runtime_version": ">=0.13.8 <1.0.0"
+  },
+  "spec": {
+    "edition": "personal",
+    "modality": "self_hosted",
+    "operator": "absent",
+    "managed_by": "owner",
+    "hub": "required",
+    "data_region": "local",
+    "orchestration": "docker_compose",
+    "runtime": {
+      "service": "runtime",
+      "components": [
+        "api",
+        "reconciliation_operator",
+        "console"
+      ],
+      "image": {
+        "repository": "ghcr.io/ironbat-digital/nexus-runtime",
+        "pin_policy": "digest",
+        "resolved": false
+      },
+      "ports": [
+        {
+          "name": "http",
+          "container_port": 8787,
+          "host_port": 8787,
+          "bind_host": "127.0.0.1"
+        }
+      ],
+      "health": {
+        "liveness_path": "/healthz",
+        "readiness_path": "/readyz",
+        "interval_seconds": 10
+      }
+    },
+    "voice_sidecar": {
+      "enabled": false,
+      "base_url": "http://127.0.0.1:7070",
+      "health_path": "/voicebox/status"
+    },
+    "persistence": {
+      "engine": "sqlite",
+      "encryption_at_rest": true,
+      "db_path": "/data/nexus.db",
+      "journal_mode": "WAL",
+      "migrations": "auto_on_start"
+    },
+    "storage": {
+      "blobs": "local_filesystem",
+      "path": "/data/artifacts"
+    },
+    "network": {
+      "bind_default": "127.0.0.1",
+      "inbound_public": false,
+      "tls": "optional"
+    },
+    "llm": {
+      "providers": [
+        {
+          "provider": "anthropic",
+          "secret_ref": "ANTHROPIC_API_KEY"
+        },
+        {
+          "provider": "openai",
+          "secret_ref": "OPENAI_API_KEY"
+        }
+      ],
+      "priority": [
+        "anthropic",
+        "openai"
+      ],
+      "retry": {
+        "max_retries": 1,
+        "backoff": "exponential"
+      },
+      "provider_fallback": false
+    },
+    "secrets": {
+      "scheme": "age",
+      "vault": "local",
+      "bundle_ref": {
+        "bundle_id": "sb_personal_9d2f7a1c",
+        "manifest_ref": "secrets-bundle-manifest.example.json",
+        "recipient": {
+          "instance_id": "inst_personal8f3a2c",
+          "public_key_id": "inst-personal8f3a2c-enc-2026"
+        },
+        "scheme": "age",
+        "refs": [
+          {
+            "ref_name": "ANTHROPIC_API_KEY",
+            "service": "anthropic"
+          },
+          {
+            "ref_name": "OPENAI_API_KEY",
+            "service": "openai"
+          }
+        ]
+      }
+    },
+    "packs": {
+      "public_lanes_enabled": true,
+      "requires_hub_account": false
+    },
+    "hardware": {
+      "minimum": {
+        "cpu_cores": 2,
+        "ram_gb": 4,
+        "disk_gb": 20,
+        "gpu": false
+      },
+      "recommended": {
+        "cpu_cores": 4,
+        "ram_gb": 8,
+        "disk_gb": 40,
+        "gpu": false
+      }
+    },
+    "boundaries": {
+      "architecture_evaluation": false,
+      "cloud_provider_selection": false,
+      "deployment_modality_choice": false,
+      "non_default_provider": false,
+      "multi_user": false,
+      "hub_premium_packs": false,
+      "billing": false,
+      "managed_fleet_ops": false
+    }
+  }
+}
